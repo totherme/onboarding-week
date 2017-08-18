@@ -6,21 +6,79 @@ You've already used `cf cups` to tell your CF app how to access a redis that
 you already had credentials for. But suppose we want to provide a large number
 of app developers access to a service like redis, without either:
 1. giving them all exactly the same username and password -- seems like a
-  security risk
+   security risk
 1. manually creating a new redis account for every single user that comes
-  asking -- seems like a lot of work
+   asking -- seems like a lot of work
 
 The answer is to write a program that can create a new redis account for each
 user that comes asking, and give that user the credentials to only their own
-account.
+account. We call this a service broker. Take a look at the CF docs, and the
+help for `cf create-service`, `cf marketplace`, `cf bind-service`, and `cf
+create-service-broker`.
+
+Write a service broker which allows a single CF app developer to access a
+single redislabs account. You don't need to do proper user-management for this
+little exercise.
+
+### How?
+
+You may wish to [use a library](https://github.com/pivotal-cf/brokerapi)
 
 ---
 Use your service broker
+
+Write a CF app that can use your service broker. Deploy it, and watch it work.
+When you're done, clean up your cloudfoundry, and delete your service broker
+from the marketplace.
 ---
-Build a bosh release
+Install redis on a VM
+
+In practice, many of our customers would rather run their own data services,
+rather than rely on external services like redislabs. One way to do this is to
+install your data service (e.g. redis) on some machine on the customer's site.
+
+- Spin up a linux VM in virtualbox, and install redis. 
+- Using this experience, consider: if our customer is operating like this, what
+  do they need to do to stay secure in the event of something like heartbleed
+  or shellshock. What if redis isn't the only data service they're running?
+---
+Build a bosh release for redis
+
+Rather than asking our customers to install (and update!) redis by hand on
+some VM, we can let BOSH do some of the work for them. To make this possible we
+have to provide a bosh release for redis.
+
+Write a bosh release for redis.
+
+The following docs might be helpful:
+
+https://bosh.io/docs
+https://bosh.io/docs/create-release.html
+
+If your customer is using your redis bosh release, does that change what they
+need to do in the event of another heartbleed? What if redis isn't the only
+data service they're running?
 ---
 Update your service broker to work with your bosh release
+
+Now that you have a bosh release for redis, you should be able to deploy redis
+in the cloud. Do so. Now alter your redislabs service broker so that it works
+with your cloud-deployed redis, instead of with your redislabs account.
+
+You can test your service broker by creating a service, and binding an app to
+it.
 ---
 Package your service broker and bosh release together in a tile
+
+Now you have a service broker that works with deployed instances of redis, and
+you have a bosh release which allows people to deploy redis. Wouldn't it be
+great if we could package those things up into a single product?
+
+A pivotal tile is a means of packaging up some number of bosh releases and CF
+apps into a single operator-focussed product with a pretty GUI. There's a
+development guide for tiles [here](https://docs.pivotal.io/tiledev/).
+
+Package your redis bosh release and service broker into a tile. Depending on
+how  you wrote your broker, you may need to write a bosh release for it.
 ---
 [RELEASE] Services: Build a Service ⇧
