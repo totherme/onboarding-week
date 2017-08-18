@@ -1,0 +1,26 @@
+[RELEASE] First, do "Services: Redis CUPS"
+---
+Build a service broker
+### What?
+You've already used `cf cups` to tell your CF app how to access a redis that
+you already had credentials for. But suppose we want to provide a large number
+of app developers access to a service like redis, without either:
+1. giving them all exactly the same username and password -- seems like a
+  security risk
+1. manually creating a new redis account for every single user that comes
+  asking -- seems like a lot of work
+
+The answer is to write a program that can create a new redis account for each
+user that comes asking, and give that user the credentials to only their own
+account.
+
+---
+Use your service broker
+---
+Build a bosh release
+---
+Update your service broker to work with your bosh release
+---
+Package your service broker and bosh release together in a tile
+---
+[RELEASE] Services: Build a Service ⇧
